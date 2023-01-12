@@ -1,0 +1,13 @@
+public virtual class RepoFactory {
+    public virtual Callable getAccountRepo(Type classType) {
+        return new Repository(Account.SObjectType, classType);
+    }
+
+    public virtual Callable getOppRepo(Type classType) {
+        return new Repository(Opportunity.SObjectType, classType);
+    }
+
+    public virtual Callable getOppLineItemRepo(Type classType) {
+        return new Repository(OpportunityLineItem.SObjectType, classType);
+    }
+}
