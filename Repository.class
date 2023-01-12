@@ -1,0 +1,35 @@
+public class Repository implements Callable {
+    private final Schema.SObjectType repoType;
+    private final Type classType;
+
+    public Repository(Schema.SObjectType repoType, Type classType) {
+        this.repoType = repoType;
+        this.classType = classType;
+    }
+
+    public List<SObject> call(String action, Map<String, Object> args) {
+        switch on action {
+            when 'concatStrings' {
+                return this.concatStrings((String)args.get('stringValue'));
+            }
+            when 'multiplyNumbers' {
+                return this.multiplyNumbers((Decimal)args.get('decimalValue'));
+            }
+            when else {
+                throw new ExtensionMalformedCallException('Method not implemented');
+            }
+        }
+    }
+
+    String concatStrings(String stringValue) {
+        if(this.repoType != String.getSObjectType()) throw new Exception('Not a String');
+        return stringValue + stringValue;
+    }
+
+    // Actual method
+    Decimal multiplyNumbers(Decimal decimalValue) {
+        if(this.repoType != Decimal.getSObjectType()) throw new Exception('Not a Decimal');
+        return decimalValue * decimalValue;
+    }
+
+}
