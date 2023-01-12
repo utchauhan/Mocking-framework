@@ -1,0 +1,45 @@
+public class RepoFactoryMock extends RepoFactory {
+    @testVisible
+    private static List<SObject> QueryResults = new List<SObject>();
+
+    public override Callable getAccountRepo() {
+        return this.getRepository(super.getAccountRepo(), Account.SObjectType);
+    }
+
+    public override Callable getOppLineItemRepo() {
+        return this.getRepository(super.getOppLineItemRepo(), OpportunityLineItem.SObjectType);
+    }
+
+    private Callable getRepository(Callable repo, Schema.SObjectType sobjType) {
+        List<SObject> queriedResults = this.getResults(sobjType);
+        return queriedResults.size() > 0 ?
+            new RepoMock(queriedResults) :
+            repo;
+    }
+
+    private List<SObject> getResults(SObjectType sobjType) {
+        List<SObject> resultList = new List<SObject>();
+        for(SObject potentialResult : QueryResults) {
+            if(potentialResult.getSObjectType() == sobjType) {
+                resultList.add(potentialResult);
+            }
+        }
+        return resultList;
+    }
+
+    //now, when you reach the point
+    //in testing where you need to
+    //stub out a specific repo
+    private class RepoMock implements Callable {
+        private final List<SObject> results;
+
+        public RepoMock(List<SObject> results) {
+            this.results = results;
+        }
+
+        public List<SObject> call(String action, Map<String, Object> args) {
+            return this.results;
+        }
+
+    }
+}
